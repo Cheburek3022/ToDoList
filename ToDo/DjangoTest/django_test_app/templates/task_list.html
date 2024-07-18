@@ -3,68 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDo List</title>
+    <title>Add Task</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container mt-5">
-        <h1>ToDo List</h1>
-        <form id="task-form">
+        <h1>Add Task</h1>
+        <form id="task-form" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Add</button>
         </form>
-        <ul id="task-list" class="list-group mt-3">
-            {% for task in tasks %}
-            <li id="task-{{ task.id }}" class="list-group-item d-flex justify-content-between align-items-center">
-                {{ task.title }} (Due: {{ task.deadline }})
-                <button class="btn btn-danger btn-sm" onclick="deleteTask({{ task.id }})">Delete</button>
-            </li>
-            {% endfor %}
-        </ul>
+        <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Back to Home</a>
     </div>
+</body>
+</html>
 
-    <script>
-        $(document).ready(function() {
-            $('#task-form').on('submit', function(e) {
-                e.preventDefault();
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "add_task" %}',
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        const task = response.task;
-                        $('#task-list').append(
-                            `<li id="task-${task.id}" class="list-group-item d-flex justify-content-between align-items-center">
-                                ${task.title} (Due: ${task.deadline})
-                                <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete</button>
-                            </li>`
-                        );
-                        $('#task-form')[0].reset();
-                    },
-                    error: function(response) {
-                        console.log('Error:', response);
-                    }
-                });
-            });
-        });
+<script>
+    $(document).ready(function() {
+        $('#task-form').on('submit', function(e) {
+            e.preventDefault();
 
-        function deleteTask(taskId) {
             $.ajax({
                 type: 'POST',
-                url: `/tasks/delete/${taskId}/`,
-                data: {
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
+                url: '{% url "add_task" %}',
+                data: $(this).serialize(),
                 success: function(response) {
-                    $(`#task-${response.id}`).remove();
+                    // If successful, redirect to home page
+                    window.location.href = '{% url "home" %}';
                 },
                 error: function(response) {
                     console.log('Error:', response);
                 }
             });
-        }
-    </script>
+        });
+    });
+</script>
+
 </body>
 </html>
+
+
