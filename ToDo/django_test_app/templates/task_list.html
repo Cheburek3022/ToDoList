@@ -8,28 +8,24 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1>Add Task</h1>
-        <form id="task-form" method="post">
+        <h1>Add a New Task</h1>
+        <form id="task-form">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Add</button>
+            <button type="submit" class="btn btn-primary">Add Task</button>
         </form>
         <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Back to Home</a>
     </div>
-</body>
-</html>
 
-<script>
-    $(document).ready(function() {
-        $('#task-form').on('submit', function(e) {
-            e.preventDefault();
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#task-form').on('submit', function(event) {
+            event.preventDefault();
             $.ajax({
                 type: 'POST',
                 url: '{% url "add_task" %}',
                 data: $(this).serialize(),
                 success: function(response) {
-                    // If successful, redirect to home page
                     window.location.href = '{% url "home" %}';
                 },
                 error: function(response) {
@@ -37,10 +33,7 @@
                 }
             });
         });
-    });
-</script>
-
+    </script>
 </body>
 </html>
-
 

@@ -7,8 +7,10 @@ class User(AbstractUser):
 
 
 class Task(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=255)
     deadline = models.DateField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
 class Login(models.Model):
     username = models.CharField(max_length=100)
