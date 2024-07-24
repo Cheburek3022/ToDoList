@@ -1,39 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Task</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1>Add a New Task</h1>
-        <form id="task-form">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Add Task</button>
-        </form>
-        <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Back to Home</a>
-    </div>
+{% extends 'base.html' %}
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $('#task-form').on('submit', function(event) {
-            event.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: '{% url "add_task" %}',
-                data: $(this).serialize(),
-                success: function(response) {
-                    window.location.href = '{% url "home" %}';
-                },
-                error: function(response) {
-                    console.log('Error:', response);
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+{% block title %}Add/Edit Task{% endblock %}
 
+{% block content %}
+    <h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Task</h1>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+{% endblock %}

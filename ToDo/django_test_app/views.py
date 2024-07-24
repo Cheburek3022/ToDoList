@@ -27,7 +27,7 @@ class HomePage(IsUserAuth, ListView):
         return Task.objects.filter(user=self.request.user)
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(IsUserAuth, CreateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_list.html'
@@ -35,21 +35,23 @@ class TaskCreateView(CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        self.object = form.save()
-        task_data = {
-            'id': self.object.id,
-            'title': self.object.title,
-            'deadline': self.object.deadline.strftime('%Y-%m-%d')
-        }
-        return JsonResponse({'task': task_data}, status=200)
+        return super().form_valid(form)
 
 
-class TaskDeleteView(DeleteView):
+class TaskUpdateView(IsUserAuth, UpdateView):
     model = Task
+    form_class = TaskForm
+    template_name = 'task_list.html'
     success_url = reverse_lazy('home')
 
-    def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class TaskDeleteView(IsUserAuth, DeleteView):
+    model = Task
+    success_url = reverse_lazy('home')
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -58,7 +60,7 @@ class TaskDeleteView(DeleteView):
 
 
 class UserRegisterView(FormView):
-    template_name = 'register.html'
+    template_name = 'registration.html'
     form_class = UserRegisterForm
     success_url = reverse_lazy('home')
 
@@ -68,17 +70,6 @@ class UserRegisterView(FormView):
         password = form.cleaned_data.get('password1')
         user = authenticate(username=username, password=password)
         login(self.request, user)
-        return super().form_valid(form)
-
-
-class TaskUpdateView(IsUserAuth, UpdateView):
-    model = Task
-    form_class = TaskForm
-    template_name = 'updatetask.html'
-    success_url = reverse_lazy('home')
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
         return super().form_valid(form)
 
 
